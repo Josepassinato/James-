@@ -3,6 +3,7 @@ body {
   background-color: #111827; /* bg-dark */
   color: #F9FAFB; /* text-primary */
   overflow: hidden;
+  overscroll-behavior: contain;
 }
 
 /* For browsers that support ::-webkit-scrollbar */

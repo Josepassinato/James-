@@ -497,6 +497,7 @@ const App: React.FC = () => {
                 onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
                 onOpenSettings={() => setIsSettingsModalOpen(true)}
                 onStartMeeting={() => setIsRecordingModeModalOpen(true)}
+                onOpenCamera={() => setIsCameraViewOpen(true)}
             />
             <SettingsModal 
                 isOpen={isSettingsModalOpen}

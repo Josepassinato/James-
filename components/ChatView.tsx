@@ -1,6 +1,6 @@
 // components/ChatView.tsx
 import React from 'react';
-import { Menu, Mic, LoaderCircle, CircleStop, Settings, Wifi, WifiOff, Users, CloudOff } from 'lucide-react';
+import { Menu, Mic, LoaderCircle, CircleStop, Settings, Wifi, WifiOff, Video, CloudOff, Camera } from 'lucide-react';
 import { ChatMessage } from '../types';
 
 interface ChatViewProps {
@@ -14,6 +14,7 @@ interface ChatViewProps {
   onToggleSidebar: () => void;
   onOpenSettings: () => void;
   onStartMeeting: () => void;
+  onOpenCamera: () => void;
 }
 
 const ChatBubble: React.FC<{ message: ChatMessage }> = ({ message }) => {
@@ -76,7 +77,8 @@ export const ChatView: React.FC<ChatViewProps> = ({
   onMicClick,
   onToggleSidebar,
   onOpenSettings,
-  onStartMeeting
+  onStartMeeting,
+  onOpenCamera,
 }) => {
   const chatEndRef = React.useRef<HTMLDivElement>(null);
 
@@ -91,20 +93,20 @@ export const ChatView: React.FC<ChatViewProps> = ({
   const getButtonState = () => {
     if (!isRecording) {
       return {
-        icon: <Mic size={32} />,
+        icon: <Mic className="w-8 h-8" />,
         label: 'Iniciar Conversa',
         style: 'bg-brand-primary hover:bg-brand-primary-dark text-white',
       };
     }
     if (isAssistantSpeaking) {
       return {
-        icon: <LoaderCircle size={32} className="animate-spin" />,
+        icon: <LoaderCircle className="w-8 h-8 animate-spin" />,
         label: 'Assistente Falando',
         style: 'bg-bg-lighter text-text-secondary cursor-wait',
       };
     }
     return {
-      icon: <CircleStop size={32} />,
+      icon: <CircleStop className="w-8 h-8" />,
       label: 'Parar Gravação',
       style: 'bg-red-500 text-white animate-pulse',
     };
@@ -125,12 +127,9 @@ export const ChatView: React.FC<ChatViewProps> = ({
                   <CloudOff size={16} className="text-yellow-500" />
               </div>
             )}
-           <h1 className="text-xl font-semibold text-text-primary">James Assistant</h1>
+           <h1 className="text-lg sm:text-xl font-semibold text-text-primary">James Assistant</h1>
         </div>
         <div className="flex items-center space-x-1">
-            <button onClick={onStartMeeting} className="p-2 rounded-full hover:bg-bg-lighter" aria-label="Iniciar Reunião">
-                <Users size={20} />
-            </button>
             <button onClick={onOpenSettings} className="p-2 rounded-full hover:bg-bg-lighter" aria-label="Configurações">
                 <Settings size={20} />
             </button>
@@ -150,14 +149,32 @@ export const ChatView: React.FC<ChatViewProps> = ({
       </div>
       
       <div className="p-4 md:p-6 bg-bg-light border-t border-bg-lighter">
-        <div className="max-w-4xl mx-auto flex items-center justify-center">
+        <div className="max-w-4xl mx-auto flex items-center justify-center space-x-4 sm:space-x-6">
+           <button
+              onClick={onStartMeeting}
+              disabled={isRecording}
+              aria-label="Gravar Reunião"
+              title="Gravar Reunião"
+              className="w-14 h-14 rounded-full flex items-center justify-center bg-bg-lighter text-text-secondary hover:bg-bg-main transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+           >
+              <Video className="w-6 h-6" />
+           </button>
            <button
             onClick={handleMicButtonClick}
             disabled={!isOnline || (isRecording && isAssistantSpeaking)}
             aria-label={buttonState.label}
-            className={`w-20 h-20 rounded-full flex items-center justify-center transition-all duration-300 ease-in-out transform hover:scale-105 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none ${buttonState.style}`}
+            className={`w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center transition-all duration-300 ease-in-out transform hover:scale-105 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none ${buttonState.style}`}
           >
             {buttonState.icon}
+          </button>
+          <button
+              onClick={onOpenCamera}
+              disabled={!isRecording}
+              aria-label="Abrir Câmera"
+              title={!isRecording ? "Inicie uma conversa para usar a câmera" : "Abrir Câmera"}
+              className="w-14 h-14 rounded-full flex items-center justify-center bg-bg-lighter text-text-secondary hover:bg-bg-main transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+              <Camera className="w-6 h-6" />
           </button>
         </div>
       </div>
