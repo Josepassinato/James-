@@ -1,0 +1,9 @@
+{
+  "requestFramePermissions": [
+    "camera",
+    "geolocation",
+    "microphone"
+  ],
+  "name": "James - Assistente Pessoal de IA",
+  "description": ""
+}

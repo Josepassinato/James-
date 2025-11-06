@@ -1,0 +1,22 @@
+
+{
+  "short_name": "James",
+  "name": "James - Your Personal AI Assistant",
+  "description": "An AI assistant powered by Gemini 2.5 Pro that learns from your conversations, organizes information into a personal database, and helps you manage your life's details.",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#111827",
+  "background_color": "#111827"
+}
