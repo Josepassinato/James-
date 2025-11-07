@@ -1,7 +1,8 @@
 // components/SettingsModal.tsx
 import React, { useState, useEffect } from 'react';
-import { X, Globe, Glasses, WifiOff } from 'lucide-react';
+import { X, Globe, Glasses, WifiOff, Database, LoaderCircle, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { UserProfile, Integrations } from '../types';
+import { testFirebaseConnection } from '../services/firebaseService';
 
 interface SettingsModalProps {
     isOpen: boolean;
@@ -46,11 +47,16 @@ const IntegrationToggle: React.FC<{
 
 export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, onSave, currentProfile }) => {
     const [profile, setProfile] = useState<UserProfile | null>(null);
+    const [testStatus, setTestStatus] = useState<'idle' | 'testing' | 'success' | 'error'>('idle');
+    const [testMessage, setTestMessage] = useState('');
 
     useEffect(() => {
         if (currentProfile) {
             setProfile(JSON.parse(JSON.stringify(currentProfile))); // Deep copy
         }
+        // Reset test status when modal is opened/closed
+        setTestStatus('idle');
+        setTestMessage('');
     }, [currentProfile, isOpen]);
 
     if (!isOpen || !profile) {
@@ -70,6 +76,35 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, o
                 [key]: !prev.integrations[key]
             }
         }) : null);
+    };
+
+    const handleTestConnection = async () => {
+        setTestStatus('testing');
+        setTestMessage('');
+        const result = await testFirebaseConnection();
+        setTestMessage(result.message);
+        setTestStatus(result.success ? 'success' : 'error');
+
+        // Reset after 5 seconds
+        setTimeout(() => {
+            setTestStatus('idle');
+            setTestMessage('');
+        }, 5000);
+    };
+
+    const TestStatusIndicator = () => {
+        if (testStatus === 'idle' || testStatus === 'testing') return null;
+
+        const isSuccess = testStatus === 'success';
+        const Icon = isSuccess ? CheckCircle2 : AlertTriangle;
+        const color = isSuccess ? 'text-green-500' : 'text-red-500';
+
+        return (
+            <div className={`flex items-center space-x-2 text-sm mt-3 ${color}`}>
+                <Icon size={16} />
+                <span>{testMessage}</span>
+            </div>
+        );
     };
 
     return (
@@ -150,6 +185,31 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, o
                            />
                         </div>
                     </div>
+
+                    <div>
+                        <h3 className="text-lg font-semibold text-text-primary mb-4">Conectividade e Memória</h3>
+                        <div className="flex items-start space-x-4">
+                            <div className="flex-shrink-0">
+                                <Database className="h-6 w-6 text-gray-400" />
+                            </div>
+                            <div className="flex-1">
+                                <h4 className="font-semibold text-text-primary">Memória de Longo Prazo (Firestore)</h4>
+                                <p className="text-sm text-text-secondary">Verifique se o aplicativo está conectado corretamente ao Firebase para salvar e sincronizar seus dados.</p>
+                                <div className="mt-4">
+                                    <button
+                                        onClick={handleTestConnection}
+                                        disabled={testStatus === 'testing'}
+                                        className="inline-flex items-center px-4 py-2 text-sm font-medium rounded-md bg-bg-main text-text-primary hover:bg-bg-lighter border border-bg-lighter transition-colors disabled:opacity-50 disabled:cursor-wait"
+                                    >
+                                        {testStatus === 'testing' && <LoaderCircle size={16} className="animate-spin mr-2" />}
+                                        {testStatus === 'testing' ? 'Testando...' : 'Testar Conexão'}
+                                    </button>
+                                    <TestStatusIndicator />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
 
                 <div className="p-6 mt-auto border-t border-bg-lighter flex justify-end space-x-4">

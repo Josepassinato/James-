@@ -55,6 +55,10 @@ const App: React.FC = () => {
     useEffect(() => {
         isRecordingRef.current = isRecording;
     }, [isRecording]);
+    
+    const addMessage = useCallback((role: 'user' | 'model' | 'system', content: string, actions?: ChatMessage['actions']) => {
+        setMessages(prev => [...prev, { id: uuidv4(), role, content, actions }]);
+    }, []);
 
     useEffect(() => {
         // Load profile with cache-first strategy
@@ -65,7 +69,18 @@ const App: React.FC = () => {
             }
             const syncedProfile = await syncUserProfile();
             setProfile(syncedProfile);
-            setFirestoreStatus(getFirestoreStatus()); // Check Firestore status after sync
+            
+            const fsStatus = getFirestoreStatus();
+            setFirestoreStatus(fsStatus);
+            
+            // Adiciona uma mensagem de status da conexão com a Memória de Longo Prazo
+            setTimeout(() => {
+                if (fsStatus) {
+                    addMessage('system', '✅ Memória de Longo Prazo conectada. Suas configurações e aprendizados estão sendo salvos permanentemente.');
+                } else {
+                    addMessage('system', '⚠️ Falha ao conectar a Memória de Longo Prazo. O modo local está ativo. Verifique as credenciais do Firebase.');
+                }
+            }, 500);
         };
         loadProfile();
 
@@ -85,11 +100,7 @@ const App: React.FC = () => {
             window.removeEventListener('online', handleOnline);
             window.removeEventListener('offline', handleOffline);
         };
-    }, []);
-
-    const addMessage = useCallback((role: 'user' | 'model' | 'system', content: string, actions?: ChatMessage['actions']) => {
-        setMessages(prev => [...prev, { id: uuidv4(), role, content, actions }]);
-    }, []);
+    }, [addMessage]);
     
     const handleSendMessage = async (message: string) => {
         if (!profile) return;
@@ -476,7 +487,7 @@ const App: React.FC = () => {
             </div>
         );
     }
-
+    
     return (
         <div className="flex h-screen w-screen bg-bg-dark text-text-primary">
             <Sidebar 

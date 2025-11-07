@@ -116,14 +116,14 @@ export const ChatView: React.FC<ChatViewProps> = ({
 
   return (
     <main className="flex-1 flex flex-col bg-bg-main">
-      <header className="flex items-center justify-between p-4 border-b border-bg-lighter bg-bg-light md:bg-transparent">
-        <button onClick={onToggleSidebar} className="p-2 rounded-full hover:bg-bg-lighter md:hidden">
+      <header className="flex items-center justify-between p-4 border-b border-bg-lighter bg-bg-light">
+        <button onClick={onToggleSidebar} className="p-2 rounded-full hover:bg-bg-lighter">
           <Menu size={24} />
         </button>
         <div className="flex items-center space-x-2">
            {isOnline ? <Wifi size={16} className="text-green-500" /> : <WifiOff size={16} className="text-red-500" />}
            {!firestoreStatus && (
-              <div title="Memória de longo prazo (Firestore) desconectada. Configure suas credenciais em services/firebaseService.ts">
+              <div title="Memória de longo prazo (Firestore) desconectada. Configure suas credenciais para garantir que as configurações e aprendizados sejam salvos permanentemente.">
                   <CloudOff size={16} className="text-yellow-500" />
               </div>
             )}
